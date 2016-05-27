@@ -12,105 +12,108 @@
 		<![endif]-->
 		<link href="css/styles.css" rel="stylesheet">
 	</head>
-	<body>
 
-<div class="container">
-<h1>Node.js Spark Job Client</h1>
-<p class="lead">We request spark-jobserver which provides a RESTful interface for submitting and managing Apache Spark jobs</p>
+    <body>
 
+    <!-- script references -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/browserClient.js"></script>
+    <script src="js/main.js"></script>
 
-<!-- Options - Bootstrap 3 Buttons
-================================================== -->
-<section id="buttons">
-  <!--<div class="page-header">
-    <!--<h1>Spark-GraphX Algorithms</h1>
-    <p class="lead">Implementation of most common Graph Algorithms</p>
-  </div>-->
-
-  <div class="page-header">
-    <h2>Spark-GraphX Algorithms</h2>
-      <p class="lead">Implementation of most common Graph Algorithms</p>
-  </div>
-  <ul class="the-buttons clearfix">
-      <li><a id='btn_pagerank' class="btn btn-primary" href="#">PageRank</a></li>
-      <li><a class="btn btn-success" href="#">Connected Components</a></li>
-      <li><a class="btn btn-info" href="#">Triangle Counting</a></li>
-      <li><a class="btn btn-warning" href="#">Shortest Path</a></li>
-      <li><a class="btn btn-danger" href="#">Word Count</a></li>
-  </ul>
-</section>
+    <div class="container">
+    <h1>Node.js Spark Job Client</h1>
+    <p class="lead">We request spark-jobserver which provides a RESTful interface for submitting and managing Apache Spark jobs</p>
 
 
-<!-- Tables - Results
-================================================== -->
-<section id="tables">
-  <div class="page-header">
-    <h1>Result</h1>
-  </div>
-  
-  <table class="table table-bordered table-striped table-hover">
-    <thead>
-      <tr>
-        <th>Job ID</th>
-        <th>Type</th>
-        <th>Status</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>26e2eb5c-ac8e-4e7f-9c68-30e520fca03b</td>
-        <td>Word Count</td>
-        <td>Started</td>
-      </tr>
-      <tr>
-        <td>26e2eb5c-ac8e-4e7f-9c68-30e520fca03b</td>
-        <td>Word Count</td>
-        <td>Started</td>
-      </tr>
-      <tr>
-        <td>26e2eb5c-ac8e-4e7f-9c68-30e520fca03b</td>
-        <td>Word Count</td>
-        <td>Started</td>
-      </tr>
-    </tbody>
-  </table>
+    <!-- Options - Bootstrap 3 Buttons
+    ================================================== -->
+    <section id="buttons">
+      <!--<div class="page-header">
+        <!--<h1>Spark-GraphX Algorithms</h1>
+        <p class="lead">Implementation of most common Graph Algorithms</p>
+      </div>-->
 
-    <!--<table class="table table-bordered table-striped table-hover">
+      <div class="page-header">
+        <h2>Spark-GraphX Algorithms</h2>
+          <p class="lead">Implementation of most common Graph Algorithms</p>
+      </div>
+      <ul class="the-buttons clearfix">
+          <li><a id='btn_pagerank' class="btn btn-primary" href="#">PageRank</a></li>
+          <li><a id='btn_connectedcomponents' class="btn btn-success" href="#">Connected Components</a></li>
+          <li><a id='btn_trianglecounting' class="btn btn-info" href="#">Triangle Counting</a></li>
+          <li><a id='btn_shortestpath' class="btn btn-warning" href="#">Shortest Path</a></li>
+          <li><a id='btn_wordcount' class="btn btn-danger" href="#">Word Count</a></li>
+      </ul>
+    </section>
+
+
+    <!-- Tables - Results
+    ================================================== -->
+    <section id="tables">
+      <div class="page-header">
+        <h1>Result</h1>
+      </div>
+
+      <table class="table table-bordered table-striped table-hover">
         <thead>
-        <tr>
-            <th>Vertex ID</th>
-            <th>Vertex Name</th>
-            <th>Rank</th>
-        </tr>
+          <tr>
+            <th>Job ID</th>
+            <th>Type</th>
+            <th>Status</th>
+          </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>1</td>
-            <td>Mark</td>
-            <td>1.53256478</td>
-        </tr>
-        <tr>
-            <td>2</td>
-            <td>Jacob</td>
-            <td>0.15</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Larry</td>
-            <td>0.5237451</td>
-        </tr>
+          <tr>
+            <td>26e2eb5c-ac8e-4e7f-9c68-30e520fca03b</td>
+            <td>Word Count</td>
+            <td>Started</td>
+          </tr>
+          <tr>
+            <td>26e2eb5c-ac8e-4e7f-9c68-30e520fca03b</td>
+            <td>Word Count</td>
+            <td>Started</td>
+          </tr>
+          <tr>
+            <td>26e2eb5c-ac8e-4e7f-9c68-30e520fca03b</td>
+            <td>Word Count</td>
+            <td>Started</td>
+          </tr>
         </tbody>
-    </table>
-    -->
+      </table>
 
-</section>
+        <!--<table class="table table-bordered table-striped table-hover">
+            <thead>
+            <tr>
+                <th>Vertex ID</th>
+                <th>Vertex Name</th>
+                <th>Rank</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>1</td>
+                <td>Mark</td>
+                <td>1.53256478</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Jacob</td>
+                <td>0.15</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Larry</td>
+                <td>0.5237451</td>
+            </tr>
+            </tbody>
+        </table>
+        -->
 
-</div>
+    </section>
+
+    </div>
 	 
-	<!-- script references -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
-		<script src="js/bootstrap.min.js"></script>
-        <script src="js/browserClient.js"></script>
-        <script src="js/main.js"></script>
+
 	</body>
 </html>

@@ -24,8 +24,9 @@ module.exports = function (grunt) {
         browserify: {
             supervisor: {
                 dependencies: [
-                    "lib/restConnector.js",
-                    "lib/enums.js"
+                    "lib/enums.js",
+                    "js/browserWrapper.js",
+                    "lib/restConnector.js"
                 ],
                 files: {
                     "js/browserClient.js":["lib/restConnector.js"]

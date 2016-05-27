@@ -57,7 +57,7 @@ var client = new Client();
 
 //Local Libraries
 var Enums = require("./enums");
-var config = require("../config");
+var config = require("../config.json");
 
 /**
  * @constructor
@@ -71,7 +71,7 @@ function SparkJobClient(options) {
         throw new Error("[options] parameter not defined.");
     }
 
-    self._threshold = config.security.threshold;
+    //self._threshold = config.security.threshold;
 
 }//SparkJobClient Constructor
 
@@ -96,7 +96,7 @@ SparkJobClient.prototype.randomString = function(nBytes) {
 module.exports = SparkJobClient;
 
 
-},{"../config":1,"./enums":2,"node-rest-client":61}],4:[function(require,module,exports){
+},{"../config.json":1,"./enums":2,"node-rest-client":61}],4:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!

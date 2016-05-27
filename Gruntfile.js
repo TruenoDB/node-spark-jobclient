@@ -25,7 +25,6 @@ module.exports = function (grunt) {
             supervisor: {
                 dependencies: [
                     "lib/restConnector.js",
-                    "config.js",
                     "lib/enums.js"
                 ],
                 files: {

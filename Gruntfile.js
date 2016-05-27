@@ -28,7 +28,7 @@ module.exports = function (grunt) {
                     "lib/enums.js"
                 ],
                 files: {
-                    "browserClient.js":["lib/restConnector.js"]
+                    "js/browserClient.js":["lib/restConnector.js"]
                 }
             }
         }//browserify

@@ -1,5 +1,5 @@
 /**
- * Created by Servio on 5/25/2016.
+ * Created by Servio on 2016.05.27.
  */
 
 var Client = require('node-rest-client').Client;
@@ -30,7 +30,7 @@ client.methods.jsonMethod(function (data, response) {
 //POST
 // set content-type header and data as json in args parameter
 var args = {
-    data: { input: {string: "hello"} },
+    data: { input: {string: "hello gorman"} },
     headers: { "Content-Type": "application/json" }
 };
 
@@ -42,3 +42,6 @@ client.post("http://192.168.116.139:8090/jobs?appName=wordcount&classPath=spark.
 });
 
 //https://stackoverflow.com/questions/17690803/node-js-getaddrinfo-enotfound
+
+//deployer
+//configuration

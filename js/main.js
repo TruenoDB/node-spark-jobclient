@@ -12,12 +12,13 @@ $(document).ready(function () {
 
     /* Connection settings */
     var options = {
-        parent: self//,
-        //defaultSparkJobServer: config.sparkJobServer.defaultSparkJobServer
+        parent: self,
+        defaultSparkJobServer: config.sparkJobServer.defaultSparkJobServer,
+        defaultPort: config.sparkJobServer.defaultPort //8090
     };
 
-    /* the communication library connection variable */
-    window.X = new SparkJobClient(options);
+    /* the spark library connection variable */
+    window.SparkClient = new SparkJobClient(options);
     window.self = self;
 
     self.jobs = [];
@@ -41,6 +42,7 @@ $(document).ready(function () {
 
     $("#btn_wordcount").click(function(){
         console.log("Word Count");
+        SparkClient.wordCountRequest();
     });
 
 

@@ -24,14 +24,19 @@ module.exports = function (grunt) {
         browserify: {
             supervisor: {
                 dependencies: [
+                    "config.js",
                     "lib/enums.js",
-                    "js/browserWrapper.js",
-                    "lib/restConnector.js"
+                    "lib/sparkJobClient.js"
                 ],
                 files: {
-                    "js/browserClient.js":["lib/restConnector.js"]
+                    "js/browserClient.js":["lib/sparkJobClient.js"]
                 }
-            }
+            },
+            web:{
+                files: {
+                    "js/browserClient2.js":["js/browserWrapper.js"]
+                }
+            },
         }//browserify
     });
 

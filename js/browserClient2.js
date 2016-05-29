@@ -7,7 +7,7 @@ module.exports={
   "sparkJobServer": {
     "name": "sparkJobServer",
     "defaultHost": "0.0.0.0",
-    "defaultSparkJobServer": "192.168.116.139",
+    "defaultSparkJobServer": "spark.maverick.com",
     "defaultWorkers": 1,
     "defaultBrokers": 1,
     "defaultPort": 8090
@@ -103,7 +103,10 @@ SparkJobClient.prototype.wordCountRequest = function() {
         console.log(data.result);
         self._requestedJobs.push(data.result.jobId);
 
+        $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Word Count</td><td>Started</td></tr>');
         self.setupTimer(data.result.jobId);
+
+
         // raw response
         //console.log(response);
     });
@@ -111,12 +114,30 @@ SparkJobClient.prototype.wordCountRequest = function() {
     return strRequest;
 };
 
-/* Generates Random Numbers returns string */
-SparkJobClient.prototype.randomString = function(nBytes) {
-    
+/* Creates CORS request */
+SparkJobClient.prototype.createCORSRequest =  function createCORSRequest(method, url) {
+        var xhr = new XMLHttpRequest();
+        if ("withCredentials" in xhr) {
 
+            // Check if the XMLHttpRequest object has a "withCredentials" property.
+            // "withCredentials" only exists on XMLHTTPRequest2 objects.
+            xhr.open(method, url, true);
+
+        } else if (typeof XDomainRequest != "undefined") {
+
+            // Otherwise, check if XDomainRequest.
+            // XDomainRequest only exists in IE, and is IE's way of making CORS requests.
+            xhr = new XDomainRequest();
+            xhr.open(method, url);
+
+        } else {
+
+            // Otherwise, CORS is not supported by the browser.
+            xhr = null;
+
+        }//else
+        return xhr;
 };
-
 
 
 /* timer */
@@ -125,10 +146,7 @@ SparkJobClient.prototype.setupTimer = function(jobId) {
     var self = this;
 
     var args = {
-        headers: { "Content-Type": "application/json"//,
-                    //"Access-Control-Allow-Origin": "*"
-                },
-        mode: 'no-corps'
+        headers: { "Content-Type": "application/json"}
     };
 
     console.log(jobId);
@@ -137,15 +155,21 @@ SparkJobClient.prototype.setupTimer = function(jobId) {
 
     client3.interval = setInterval(function () {
         var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs/"+ jobId;
-        client3.post(strRequest, args, function (data, response) {
+
+        //It worked when I change this to GET method request
+        client3.get(strRequest, args, function (data, response) {
             // parsed response body as js object
             console.log(data);
+            if(data.status != Enums.jobStatus.STARTED){
+                $('#tbl_jobs > tbody:last-child').append('<tr><td>' + jobId + '</td><td>Word Count</td><td>' + data.status + '(' + data.duration + ')</td></tr>');
+                clearInterval(client3.interval);
+            }
             //console.log(data.result);
             //self._requestedJobs.push(data.result.jobId);
             // raw response
             //console.log(response);
         });
-    }, 10000);
+    }, 1000);
 
 };
 

@@ -6,7 +6,7 @@
   "sparkJobServer": {
     "name": "sparkJobServer",
     "defaultHost": "0.0.0.0",
-    "defaultSparkJobServer": "192.168.116.139",
+    "defaultSparkJobServer": "spark.maverick.com",
     "defaultWorkers": 1,
     "defaultBrokers": 1,
     "defaultPort": 8090

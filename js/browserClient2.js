@@ -38,6 +38,7 @@ function Enums() {
     this.jobStatus = {
         STARTED: "STARTED",
         FINISHED: "FINISHED",
+        RUNNING: "RUNNING",
         ERROR: "ERROR"
     };
 
@@ -73,6 +74,7 @@ var client2 = new Client();
 //Local Libraries
 var Enums = require("./enums");
 var config = require("../config.json");
+var counter = 1;
 
 /**
  * @constructor
@@ -98,6 +100,7 @@ function SparkJobClient(options) {
 SparkJobClient.prototype.pageRankRequest = function() {
 
     var self = this;
+    counter = 1;
 
     var args = {
         data: { input: {string: "hello gorman"} },
@@ -123,6 +126,8 @@ SparkJobClient.prototype.pageRankRequest = function() {
 SparkJobClient.prototype.wordCountRequest = function() {
 
     var self = this;
+    counter = 1;
+
     var args = {
         data: { input: {string: "hello gorman"} },
         headers: { "Content-Type": "application/json" }
@@ -132,7 +137,6 @@ SparkJobClient.prototype.wordCountRequest = function() {
     //TODO change appname, must be generated                                                          <--HERE-->
     var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=test&classPath=spark.jobserver.WordCountExample";
     client.post(strRequest, args, function (data, response) {
-        // parsed response body as js object
         console.log(data);
         console.log(data.result);
         self._requestedJobs.push(data.result.jobId);
@@ -140,9 +144,6 @@ SparkJobClient.prototype.wordCountRequest = function() {
         $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Word Count</td><td>Started</td></tr>');
         self.setupTimer(data.result.jobId, Enums.algorithmType.WORD_COUNT);
 
-
-        // raw response
-        //console.log(response);
     });
 
     return strRequest;
@@ -175,7 +176,6 @@ SparkJobClient.prototype.createCORSRequest =  function createCORSRequest(method,
 
 
 /* timer */
-//curl localhost:8090/jobs/223e8a46-91a3-4ed1-871a-97512e59c087
 SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
     var self = this;
 
@@ -188,21 +188,42 @@ SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
     var client3 = new Client();
 
     client3.interval = setInterval(function () {
+
         var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs/"+ jobId;
 
         //It worked when I change this to GET method request
         client3.get(strRequest, args, function (data, response) {
-            // parsed response body as js object
+
             console.log(data);
             //data.status != Enums.jobStatus.STARTED &&
             if(data.status === Enums.jobStatus.FINISHED){//|| data.status === Enums.jobStatus.ERROR
                 $('#tbl_jobs > tbody:last-child').append('<tr><td>' + jobId + '</td><td>' + algorithmType + '</td><td>' + data.status + '(' + data.duration + ')</td></tr>');
+                $('.progress-bar').css('width', 100+'%').attr('aria-valuenow', 100);
                 clearInterval(client3.interval);
+
+                //Results table
+                if(algorithmType === Enums.algorithmType.PAGE_RANK){
+
+                    var result = data.result;
+
+                    for(var i = 0; i < result.length; i++){
+                        $('#tbl_pr > tbody:last-child').append('<tr><td>' + result[i][0] + '</td><td>' + result[i][1] + '</td></tr>');
+                    }
+
+                }
             }
+            else if(data.status === Enums.jobStatus.RUNNING){
+
+                $('.progress-bar').css('width', counter+'%').attr('aria-valuenow', counter);
+                counter++;
+
+            }
+
+
+
             //console.log(data.result);
             //self._requestedJobs.push(data.result.jobId);
             // raw response
-            //console.log(response);
         });
     }, 1000);
 

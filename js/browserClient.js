@@ -28,8 +28,17 @@ function Enums() {
 
     this.jobStatus = {
         STARTED: "STARTED",
-        FINISHED: "FINISHED"
+        FINISHED: "FINISHED",
+        ERROR: "ERROR"
     };
+
+    this.algorithmType = {
+        PAGE_RANK:"Page Rank",
+        WORD_COUNT:"Word Count",
+        TRIANGLE_COUNTING:"Triangle Counting",
+        CONNECTED_COMPONENTS:"Connected Components"
+    };
+
 
 }
 
@@ -76,7 +85,32 @@ function SparkJobClient(options) {
 
 }//SparkJobClient Constructor
 
-/* Generates Random Numbers */
+/* Generates PageRank Request */
+SparkJobClient.prototype.pageRankRequest = function() {
+
+    var self = this;
+
+    var args = {
+        data: { input: {string: "hello gorman"} },
+        headers: { "Content-Type": "application/json" }
+    };
+
+    //TODO change appname, must be generated                                                          <--HERE-->
+    var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=pagerank&classPath=spark.jobserver.PageRank";
+    client.post(strRequest, args, function (data, response) {
+        console.log(data);
+        console.log(data.result);
+        self._requestedJobs.push(data.result.jobId);
+
+        $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Page Rank</td><td>Started</td></tr>');
+        self.setupTimer(data.result.jobId, Enums.algorithmType.PAGE_RANK);
+    });
+
+    return strRequest;
+};
+
+
+/* Generates Word Count Request */
 SparkJobClient.prototype.wordCountRequest = function() {
 
     var self = this;
@@ -95,7 +129,7 @@ SparkJobClient.prototype.wordCountRequest = function() {
         self._requestedJobs.push(data.result.jobId);
 
         $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Word Count</td><td>Started</td></tr>');
-        self.setupTimer(data.result.jobId);
+        self.setupTimer(data.result.jobId, Enums.algorithmType.WORD_COUNT);
 
 
         // raw response
@@ -133,7 +167,7 @@ SparkJobClient.prototype.createCORSRequest =  function createCORSRequest(method,
 
 /* timer */
 //curl localhost:8090/jobs/223e8a46-91a3-4ed1-871a-97512e59c087
-SparkJobClient.prototype.setupTimer = function(jobId) {
+SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
     var self = this;
 
     var args = {
@@ -151,8 +185,9 @@ SparkJobClient.prototype.setupTimer = function(jobId) {
         client3.get(strRequest, args, function (data, response) {
             // parsed response body as js object
             console.log(data);
-            if(data.status != Enums.jobStatus.STARTED){
-                $('#tbl_jobs > tbody:last-child').append('<tr><td>' + jobId + '</td><td>Word Count</td><td>' + data.status + '(' + data.duration + ')</td></tr>');
+            //data.status != Enums.jobStatus.STARTED &&
+            if(data.status === Enums.jobStatus.FINISHED){//|| data.status === Enums.jobStatus.ERROR
+                $('#tbl_jobs > tbody:last-child').append('<tr><td>' + jobId + '</td><td>' + algorithmType + '</td><td>' + data.status + '(' + data.duration + ')</td></tr>');
                 clearInterval(client3.interval);
             }
             //console.log(data.result);

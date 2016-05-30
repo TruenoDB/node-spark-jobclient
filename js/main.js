@@ -26,6 +26,7 @@ $(document).ready(function () {
     /* App UI logic */
     $("#btn_pagerank").click(function(){
         console.log("Page Rank");
+        SparkClient.pageRankRequest();
     });
 
     $("#btn_connectedcomponents").click(function(){

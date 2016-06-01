@@ -30,6 +30,7 @@ $(document).ready(function () {
     });
 
     $("#btn_connectedcomponents").click(function(){
+        SparkClient.connectedComponents();
         console.log("Connected Components");
     });
 

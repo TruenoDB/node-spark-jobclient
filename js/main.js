@@ -25,17 +25,15 @@ $(document).ready(function () {
 
     /* App UI logic */
     $("#btn_pagerank").click(function(){
-        console.log("Page Rank");
         SparkClient.pageRankRequest();
     });
 
     $("#btn_connectedcomponents").click(function(){
         SparkClient.connectedComponents();
-        console.log("Connected Components");
     });
 
     $("#btn_trianglecounting").click(function(){
-        console.log("Triangle Counting");
+        SparkClient.triangleCounting();
     });
 
     $("#btn_shortestpath").click(function(){

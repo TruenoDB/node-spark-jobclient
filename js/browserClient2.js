@@ -11,7 +11,12 @@ module.exports={
     "defaultWorkers": 1,
     "defaultBrokers": 1,
     "defaultPort": 8090
-  }
+  },
+
+  "algorithmsPublishedJob": "algorithms",
+  "schema": "scala_api",
+  "pageRankClassPath": "spark.jobserver.PageRank",
+  "connectedComponentsClassPath": "spark.jobserver.ConnectedComponents"
 }
 },{}],2:[function(require,module,exports){
 /**
@@ -49,6 +54,10 @@ function Enums() {
         CONNECTED_COMPONENTS:"Connected Components"
     };
 
+    this.pageRank = {
+
+
+    }
 
 }
 
@@ -103,15 +112,16 @@ SparkJobClient.prototype.pageRankRequest = function() {
     counter = 1;
 
     var args = {
-        data: { input: {string: "hello gorman"} },
+        data: { input: {string: config.schema} },
         headers: { "Content-Type": "application/json" }
     };
 
-    //TODO change appname, must be generated                                                          <--HERE-->
-    var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=algorithms&classPath=spark.jobserver.PageRank";
+    var strRequest = self._createHTTPRequestString(Enums.algorithmType.PAGE_RANK);
+    console.log(strRequest);
+    //"http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=algorithms&classPath=spark.jobserver.PageRank";
     client.post(strRequest, args, function (data, response) {
-        console.log(data);
-        console.log(data.result);
+        //console.log(data);
+        //console.log(data.result);
         self._requestedJobs.push(data.result.jobId);
 
         $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Page Rank</td><td>Started</td></tr>');
@@ -128,7 +138,7 @@ SparkJobClient.prototype.connectedComponents = function() {
     counter = 1;
 
     var args = {
-        data: { input: {string: "hello gorman"} },
+        data: { input: {string: "scala_api"} },
         headers: { "Content-Type": "application/json" }
     };
 
@@ -153,7 +163,7 @@ SparkJobClient.prototype.triangleCounting = function() {
     counter = 1;
 
     var args = {
-        data: { input: {string: "hello gorman"} },
+        data: { input: {string: "scala_api"} },
         headers: { "Content-Type": "application/json" }
     };
 
@@ -177,7 +187,7 @@ SparkJobClient.prototype.wordCountRequest = function() {
     counter = 1;
 
     var args = {
-        data: { input: {string: "hello gorman"} },
+        data: { input: {string: "scala_api"} },
         headers: { "Content-Type": "application/json" }
     };
 
@@ -221,7 +231,6 @@ SparkJobClient.prototype.createCORSRequest =  function createCORSRequest(method,
         }//else
         return xhr;
 };
-
 
 /* timer */
 SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
@@ -280,6 +289,28 @@ SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
         });
     }, 200);
 
+};
+
+/* Creating HTTP Request for Spark Job Server */
+SparkJobClient.prototype._createHTTPRequestString =  function(algorithmType) {
+
+    var self = this;
+
+    var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=";
+
+    if(algorithmType === Enums.algorithmType.PAGE_RANK){
+            strRequest += config.algorithmsPublishedJob + "&classPath=" + config.pageRankClassPath;
+    }
+
+    if(algorithmType === Enums.algorithmType.CONNECTED_COMPONENTS){
+        strRequest += config.algorithmsPublishedJob + "&classPath=" + config.pageRankClassPath;
+    }
+
+    if(algorithmType === Enums.algorithmType.TRIANGLE_COUNTING){
+       //TODO
+    }
+
+    return strRequest;
 };
 
 /* Exporting module */

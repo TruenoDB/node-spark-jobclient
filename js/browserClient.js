@@ -14,8 +14,8 @@ module.exports={
   },
 
   "algorithmsPublishedJob": "algorithms",
-  "schema": "scala_api",
-  "pageRankClassPath": "spark.jobserver.PageRank",
+  "schema": "gnutella",
+  "pageRankClassPath": "spark.jobserver.PR",
   "connectedComponentsClassPath": "spark.jobserver.ConnectedComponents"
 }
 },{}],2:[function(require,module,exports){
@@ -58,6 +58,18 @@ module.exports = Object.freeze(new Enums());
 },{}],3:[function(require,module,exports){
 "use strict";
 
+/*
+  ________                                                 _______   _______
+ /        |                                               /       \ /       \
+ $$$$$$$$/______   __    __   ______   _______    ______  $$$$$$$  |$$$$$$$  |
+    $$ | /      \ /  |  /  | /      \ /       \  /      \ $$ |  $$ |$$ |__$$ |
+    $$ |/$$$$$$  |$$ |  $$ |/$$$$$$  |$$$$$$$  |/$$$$$$  |$$ |  $$ |$$    $$<
+    $$ |$$ |  $$/ $$ |  $$ |$$    $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$$$$$$  |
+    $$ |$$ |      $$ \__$$ |$$$$$$$$/ $$ |  $$ |$$ \__$$ |$$ |__$$ |$$ |__$$ |
+    $$ |$$ |      $$    $$/ $$       |$$ |  $$ |$$    $$/ $$    $$/ $$    $$/
+    $$/ $$/        $$$$$$/   $$$$$$$/ $$/   $$/  $$$$$$/  $$$$$$$/  $$$$$$$/
+ */
+
 /**      In God we trust
  * Created by: Servio Palacios on 2016.05.26.
  * Source: restConnector.js
@@ -69,12 +81,12 @@ module.exports = Object.freeze(new Enums());
 //External Libraries
 var Client = require('node-rest-client').Client;
 var client = new Client();
-var client2 = new Client();
 
 //Local Libraries
 var Enums = require("./enums");
 var config = require("../config.json");
 var counter = 1;
+var algorithmResult = {};
 
 /**
  * @constructor
@@ -84,7 +96,7 @@ function SparkJobClient(options) {
 
     var self = this;
 
-    if(typeof options === "undefined"){ //I only set this when it is integrity check
+    if(typeof options === "undefined"){
         throw new Error("[options] parameter not defined.");
     }
 
@@ -108,15 +120,14 @@ SparkJobClient.prototype.pageRankRequest = function() {
     };
 
     var strRequest = self._createHTTPRequestString(Enums.algorithmType.PAGE_RANK);
-    console.log(strRequest);
-    //"http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=algorithms&classPath=spark.jobserver.PageRank";
+
     client.post(strRequest, args, function (data, response) {
-        //console.log(data);
-        //console.log(data.result);
+
         self._requestedJobs.push(data.result.jobId);
 
         $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Page Rank</td><td>Started</td></tr>');
         self.setupTimer(data.result.jobId, Enums.algorithmType.PAGE_RANK);
+
     });
 
     return strRequest;
@@ -129,14 +140,14 @@ SparkJobClient.prototype.connectedComponents = function() {
     counter = 1;
 
     var args = {
-        data: { input: {string: "scala_api"} },
+        data: { input: {string: config.schema} },
         headers: { "Content-Type": "application/json" }
     };
 
-    var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=algorithms&classPath=spark.jobserver.ConnectedComponents";
+    var strRequest = self._createHTTPRequestString(Enums.algorithmType.CONNECTED_COMPONENTS);
+
     client.post(strRequest, args, function (data, response) {
-        console.log(data);
-        console.log(data.result);
+
         self._requestedJobs.push(data.result.jobId);
 
         $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Connected Components</td><td>Started</td></tr>');
@@ -154,7 +165,7 @@ SparkJobClient.prototype.triangleCounting = function() {
     counter = 1;
 
     var args = {
-        data: { input: {string: "scala_api"} },
+        data: { input: {string: config.schema} },
         headers: { "Content-Type": "application/json" }
     };
 
@@ -182,12 +193,10 @@ SparkJobClient.prototype.wordCountRequest = function() {
         headers: { "Content-Type": "application/json" }
     };
 
-    //client.post("http://192.168.116.139:8090/jobs?appName=wordcount&classPath=spark.jobserver.WordCountExample", args, function (data, response) {
-    //TODO change appname, must be generated                                                          <--HERE-->
     var strRequest = "http://" + self._sparkJobServer + ":" + self._sparkJobServerPort + "/jobs?appName=algorithms&classPath=spark.jobserver.WordCountExample";
     client.post(strRequest, args, function (data, response) {
-        console.log(data);
-        console.log(data.result);
+        //console.log(data);
+        //console.log(data.result);
         self._requestedJobs.push(data.result.jobId);
 
         $('#tbl_jobs > tbody:last-child').append('<tr><td>' + data.result.jobId + '</td><td>Word Count</td><td>Started</td></tr>');
@@ -228,10 +237,10 @@ SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
     var self = this;
 
     var args = {
-        headers: { "Content-Type": "application/json"}
+        headers: {"Content-Type": "application/json"}
     };
 
-    console.log(jobId);
+    //console.log(jobId);
 
     var client3 = new Client();
 
@@ -243,8 +252,9 @@ SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
         client3.get(strRequest, args, function (data, response) {
 
             console.log(data);
-            //data.status != Enums.jobStatus.STARTED &&
+
             if(data.status === Enums.jobStatus.FINISHED){
+
                 $('#tbl_jobs > tbody:last-child').append('<tr><td>' + jobId + '</td><td>' + algorithmType + '</td><td>' + data.status + '(' + data.duration + ')</td></tr>');
                 $('.progress-bar').css('width', 100+'%').attr('aria-valuenow', 100);
                 clearInterval(client3.interval);
@@ -276,7 +286,8 @@ SparkJobClient.prototype.setupTimer = function(jobId, algorithmType) {
 
             //console.log(data.result);
             //self._requestedJobs.push(data.result.jobId);
-            // raw response
+
+            algorithmResult = data.result;
         });
     }, 200);
 
@@ -294,7 +305,7 @@ SparkJobClient.prototype._createHTTPRequestString =  function(algorithmType) {
     }
 
     if(algorithmType === Enums.algorithmType.CONNECTED_COMPONENTS){
-        strRequest += config.algorithmsPublishedJob + "&classPath=" + config.pageRankClassPath;
+        strRequest += config.algorithmsPublishedJob + "&classPath=" + config.connectedComponentsClassPath;
     }
 
     if(algorithmType === Enums.algorithmType.TRIANGLE_COUNTING){

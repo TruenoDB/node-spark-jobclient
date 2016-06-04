@@ -13,7 +13,7 @@
   },
 
   "algorithmsPublishedJob": "algorithms",
-  "schema": "scala_api",
-  "pageRankClassPath": "spark.jobserver.PageRank",
+  "schema": "gnutella",
+  "pageRankClassPath": "spark.jobserver.PR",
   "connectedComponentsClassPath": "spark.jobserver.ConnectedComponents"
 }

@@ -55,9 +55,9 @@ object PageRank extends SparkJob {
 
     override def runJob(sc: SparkContext, config: Config): Any = {
         //get table from keyspace and stored as rdd
-        val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable("scala_api", "vertices2")
+        val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable(config.getString("input.string"), "vertices2")
 
-        val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable("scala_api", "edges")
+        val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "edges")
                                                  .select("fromvertex", "tovertex")
         val edgesRDD: RDD[Edge[Int]] = rowsCassandra.map(x =>
             Edge(

@@ -15,24 +15,6 @@ import org.apache.spark.rdd.RDD
 
 object PageRank extends SparkJob {
 
-    /*def main(args: Array[String]) {
-        val conf = new SparkConf().setMaster("local[4]").setAppName("PageRank")
-        val sc = new SparkContext(conf)
-        val config = ConfigFactory.parseString("")
-        val results = runJob(sc, config)
-        println("Result is " + results)
-    }
-
-    override def validate(sc: SparkContext, config: Config): SparkJobValidation = {
-        Try(config.getString("input.string"))
-          .map(x => SparkJobValid)
-          .getOrElse(SparkJobInvalid("No input.string config param"))
-    }
-
-    override def runJob(sc: SparkContext, config: Config): Any = {
-        sc.parallelize(config.getString("input.string").split(" ").toSeq).countByValue
-    }*/
-
     def main(args: Array[String]) {
         //System.setProperty("spark.cassandra.query.retry.count", "1")
         //System.out.println(System.getProperty( "java.class.path"))
@@ -55,9 +37,9 @@ object PageRank extends SparkJob {
 
     override def runJob(sc: SparkContext, config: Config): Any = {
         //get table from keyspace and stored as rdd
-        val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable("scala_api", "vertices2")
+        val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable(config.getString("input.string"), "vertices2")
 
-        val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable("scala_api", "edges")
+        val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "edges")
                                                  .select("fromvertex", "tovertex")
         val edgesRDD: RDD[Edge[Int]] = rowsCassandra.map(x =>
             Edge(

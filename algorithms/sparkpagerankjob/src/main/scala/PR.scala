@@ -1,4 +1,5 @@
 /*
+
  ________                                                 _______   _______
 /        |                                               /       \ /       \
 $$$$$$$$/______   __    __   ______   _______    ______  $$$$$$$  |$$$$$$$  |
@@ -8,16 +9,16 @@ $$$$$$$$/______   __    __   ______   _______    ______  $$$$$$$  |$$$$$$$  |
    $$ |$$ |      $$ \__$$ |$$$$$$$$/ $$ |  $$ |$$ \__$$ |$$ |__$$ |$$ |__$$ |
    $$ |$$ |      $$    $$/ $$       |$$ |  $$ |$$    $$/ $$    $$/ $$    $$/
    $$/ $$/        $$$$$$/   $$$$$$$/ $$/   $$/  $$$$$$/  $$$$$$$/  $$$$$$$/
+
  */
 
 /**      In God we trust
   * Created by: Servio Palacios on 2016.05.26.
-  * Source: ConnectedComponents.scala
+  * Source: PR.scala
   * Author: Servio Palacios
   * Last edited: 2016.06.01 13:55
   * Description: Spark Job Connector using REST API
   */
-
 
 package spark.jobserver
 
@@ -33,14 +34,14 @@ import org.apache.spark.graphx.VertexRDD
 import org.apache.spark.rdd.RDD
 
 
-object ConnectedComponents extends SparkJob {
-
+object PR extends SparkJob {
 
   def main(args: Array[String]) {
+
     val conf = new SparkConf(true)
       .set("spark.cassandra.connection.host", "localhost")
       .setMaster("local[4]")
-      .setAppName("ConnectedComponents")
+      .setAppName("PageRankGN")
 
     val sc = new SparkContext(conf)
     val config = ConfigFactory.parseString("")
@@ -57,27 +58,28 @@ object ConnectedComponents extends SparkJob {
   override def runJob(sc: SparkContext, config: Config): Any = {
     //get table from keyspace and stored as rdd
     val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable(config.getString("input.string"), "vertices")
+    val vertexCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "vertices")
+                                          .select("id")
 
     val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "edges")
-                                             .select("fromv", "tov")
+      .select("fromv", "tov")
     val edgesRDD: RDD[Edge[Int]] = rowsCassandra.map(x =>
       Edge(
         x.getLong("fromv"),
         x.getLong("tov")
       ))
 
-    //TODO
-    val vertex_collect = vertexRDD1.collect().take(100)
+    val vertex_collect = vertexRDD1.collect().take(1000)
+
 
     val vertexSet = VertexRDD(vertexRDD1)
 
     // Build the initial Graph
     val graph = Graph(vertexSet, edgesRDD)
 
-    // Find the connected components
-    val cc = graph.connectedComponents().vertices
-    cc.collect()
+    // Run PageRank
+    val ranks = graph.pageRank(0.0001).vertices
+    ranks.collect()
   }
 
 }
-

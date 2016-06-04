@@ -1,3 +1,25 @@
+/*
+
+ ________                                                 _______   _______
+/        |                                               /       \ /       \
+$$$$$$$$/______   __    __   ______   _______    ______  $$$$$$$  |$$$$$$$  |
+   $$ | /      \ /  |  /  | /      \ /       \  /      \ $$ |  $$ |$$ |__$$ |
+   $$ |/$$$$$$  |$$ |  $$ |/$$$$$$  |$$$$$$$  |/$$$$$$  |$$ |  $$ |$$    $$<
+   $$ |$$ |  $$/ $$ |  $$ |$$    $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$$$$$$  |
+   $$ |$$ |      $$ \__$$ |$$$$$$$$/ $$ |  $$ |$$ \__$$ |$$ |__$$ |$$ |__$$ |
+   $$ |$$ |      $$    $$/ $$       |$$ |  $$ |$$    $$/ $$    $$/ $$    $$/
+   $$/ $$/        $$$$$$/   $$$$$$$/ $$/   $$/  $$$$$$/  $$$$$$$/  $$$$$$$/
+
+ */
+
+/**      In God we trust
+  * Created by: Servio Palacios on 2016.05.26.
+  * Source: PR.scala
+  * Author: Servio Palacios
+  * Last edited: 2016.06.01 13:55
+  * Description: Spark Job Connector using REST API
+  */
+
 package spark.jobserver
 
 import com.typesafe.config.{Config, ConfigFactory}
@@ -7,7 +29,6 @@ import scala.util.Try
 import org.apache.spark.{SparkConf, SparkContext}
 import com.datastax.spark.connector._
 
-import org.apache.spark._
 import org.apache.spark.graphx._
 import org.apache.spark.graphx.VertexRDD
 import org.apache.spark.rdd.RDD
@@ -15,27 +36,8 @@ import org.apache.spark.rdd.RDD
 
 object PR extends SparkJob {
 
-  /*def main(args: Array[String]) {
-      val conf = new SparkConf().setMaster("local[4]").setAppName("PageRank")
-      val sc = new SparkContext(conf)
-      val config = ConfigFactory.parseString("")
-      val results = runJob(sc, config)
-      println("Result is " + results)
-  }
-
-  override def validate(sc: SparkContext, config: Config): SparkJobValidation = {
-      Try(config.getString("input.string"))
-        .map(x => SparkJobValid)
-        .getOrElse(SparkJobInvalid("No input.string config param"))
-  }
-
-  override def runJob(sc: SparkContext, config: Config): Any = {
-      sc.parallelize(config.getString("input.string").split(" ").toSeq).countByValue
-  }*/
-
   def main(args: Array[String]) {
-    //System.setProperty("spark.cassandra.query.retry.count", "1")
-    //System.out.println(System.getProperty( "java.class.path"))
+
     val conf = new SparkConf(true)
       .set("spark.cassandra.connection.host", "localhost")
       .setMaster("local[4]")
@@ -56,14 +58,8 @@ object PR extends SparkJob {
   override def runJob(sc: SparkContext, config: Config): Any = {
     //get table from keyspace and stored as rdd
     val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable(config.getString("input.string"), "vertices")
-                                              /*.select("fromv", "tov")*/
     val vertexCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "vertices")
                                           .select("id")
-
-    /*val vertexRDD1: RDD[VertexId] = vertexCassandra.map(x =>
-      Edge(
-        x.getLong("id")
-      ))*/
 
     val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "edges")
       .select("fromv", "tov")
@@ -74,9 +70,7 @@ object PR extends SparkJob {
       ))
 
     val vertex_collect = vertexRDD1.collect().take(1000)
-    //vertex_collect.foreach(println(_))
 
-    //edgesRDD.foreach(println(_))
 
     val vertexSet = VertexRDD(vertexRDD1)
 
@@ -86,7 +80,6 @@ object PR extends SparkJob {
     // Run PageRank
     val ranks = graph.pageRank(0.0001).vertices
     ranks.collect()
-    //sc.parallelize(config.getString("input.string").split(" ").toSeq).countByValue
   }
 
 }

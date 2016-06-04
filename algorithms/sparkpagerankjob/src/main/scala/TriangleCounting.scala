@@ -1,3 +1,25 @@
+
+/*
+ ________                                                 _______   _______
+/        |                                               /       \ /       \
+$$$$$$$$/______   __    __   ______   _______    ______  $$$$$$$  |$$$$$$$  |
+   $$ | /      \ /  |  /  | /      \ /       \  /      \ $$ |  $$ |$$ |__$$ |
+   $$ |/$$$$$$  |$$ |  $$ |/$$$$$$  |$$$$$$$  |/$$$$$$  |$$ |  $$ |$$    $$<
+   $$ |$$ |  $$/ $$ |  $$ |$$    $$ |$$ |  $$ |$$ |  $$ |$$ |  $$ |$$$$$$$  |
+   $$ |$$ |      $$ \__$$ |$$$$$$$$/ $$ |  $$ |$$ \__$$ |$$ |__$$ |$$ |__$$ |
+   $$ |$$ |      $$    $$/ $$       |$$ |  $$ |$$    $$/ $$    $$/ $$    $$/
+   $$/ $$/        $$$$$$/   $$$$$$$/ $$/   $$/  $$$$$$/  $$$$$$$/  $$$$$$$/
+ */
+
+
+/**      In God we trust
+  * Created by: Servio Palacios on 2016.05.26.
+  * Source: TirangleCounting.scala
+  * Author: Servio Palacios
+  * Last edited: 2016.06.01 13:55
+  * Description: Spark Job Connector using REST API
+  */
+
 package spark.jobserver
 
 import com.typesafe.config.{Config, ConfigFactory}

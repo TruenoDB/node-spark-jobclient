@@ -56,16 +56,17 @@ object ConnectedComponents extends SparkJob {
 
   override def runJob(sc: SparkContext, config: Config): Any = {
     //get table from keyspace and stored as rdd
-    val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable("scala_api", "vertices2")
+    val vertexRDD1: RDD[(VertexId, String)] = sc.cassandraTable(config.getString("input.string"), "vertices")
 
-    val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable("scala_api", "edges")
-      .select("fromvertex", "tovertex")
+    val rowsCassandra: RDD[CassandraRow] = sc.cassandraTable(config.getString("input.string"), "edges")
+                                             .select("fromv", "tov")
     val edgesRDD: RDD[Edge[Int]] = rowsCassandra.map(x =>
       Edge(
-        x.getLong("fromvertex"),
-        x.getLong("tovertex")
+        x.getLong("fromv"),
+        x.getLong("tov")
       ))
 
+    //TODO
     val vertex_collect = vertexRDD1.collect().take(100)
 
     val vertexSet = VertexRDD(vertexRDD1)

@@ -19,3 +19,55 @@
 * http://apache-spark-user-list.1001560.n3.nabble.com/GraphX-AssertionError-td13941.html
 * https://mail-archives.apache.org/mod_mbox/spark-user/201409.mbox/%3CCAOxQ-1nCATKsbFxVXJw_5Qy4gpfMDrqO_wtZOLnZdRNV2wOnAA@mail.gmail.com%3E
 * 
+
+###Spark Job Client
+
+####Initiating Job Server
+```
+cd ~/spark-jobserver/
+
+sbt
+job-server/reStart
+```
+
+####Generating jars
+```
+cd /home/maverick/Desktop/repos/spark-jobserver/
+sbt package
+```
+
+###Before uploading job
+```
+cd /home/maverick/Desktop/repos/spark-jobserver/job-server-tests/target/scala-2.10
+
+
+curl --data-binary @job-server-tests_2.10-0.7.0-SNAPSHOT.jar localhost:8090/jars/algorithms
+curl --data-binary @job-server-tests_2.10-0.7.0-SNAPSHOT.jar localhost:8090/jars/pagerank
+curl --data-binary @job-server-tests_2.10-0.7.0-SNAPSHOT.jar localhost:8090/jars/pr
+
+```
+
+####Testing pagerank
+```
+curl -d "input.string = a b c a b see dimelo" 'localhost:8090/jobs?appName=pagerank&classPath=spark.jobserver.PageRank'
+{
+  "status": "STARTED",
+  "result": {
+    "jobId": "b1697a2e-189d-4735-9642-83262958f122",
+    "context": "56501fa1-spark.jobserver.PageRank"
+  }
+}
+```
+
+####Classes
+```
+cd /home/maverick/Desktop/repos/spark-jobserver/job-server-tests/target/scala-2.10/classes
+```
+
+####Result
+```
+curl localhost:8090/jobs/5453779a-f004-45fc-a11d-a39dae0f9bf4
+
+```
+
+[Working temporarily in https://github.com/maverick-zhn/node-spark-jobclient]
